@@ -158,15 +158,27 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ─── Parallax on Hero ──────────────────────────────────
+  // ─── Parallax on Hero (disabled on mobile for performance) ──
   var heroBg = document.querySelector('.hero-bg');
+  var isMobile = window.innerWidth <= 768;
   if (heroBg) {
-    window.addEventListener('scroll', function () {
-      var scrolled = window.pageYOffset;
-      if (scrolled < window.innerHeight) {
-        heroBg.style.transform = 'translateY(' + (scrolled * 0.4) + 'px) scale(1.1)';
-      }
-    }, { passive: true });
+    // Lazy-load hero image on mobile to prevent glitch
+    if (isMobile) {
+      var heroImg = new Image();
+      heroImg.onload = function () {
+        heroBg.classList.add('loaded');
+      };
+      heroImg.src = 'https://siliconvalleyexpress.com/wp-content/uploads/2021/06/Siskiyou_Aviation_TJP_Falcon_2000_N42ST_5-4-21-277-1-scaled.jpg';
+    }
+    // Only enable parallax on desktop
+    if (!isMobile) {
+      window.addEventListener('scroll', function () {
+        var scrolled = window.pageYOffset;
+        if (scrolled < window.innerHeight) {
+          heroBg.style.transform = 'translateY(' + (scrolled * 0.4) + 'px) scale(1.1)';
+        }
+      }, { passive: true });
+    }
   }
 
   // ─── Header shrink on scroll ───────────────────────────
@@ -186,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (canvas) {
     var ctx = canvas.getContext('2d');
     var particles = [];
-    var particleCount = 60;
+    var particleCount = isMobile ? 20 : 60;
 
     function resizeCanvas() {
       canvas.width = canvas.parentElement.offsetWidth;
